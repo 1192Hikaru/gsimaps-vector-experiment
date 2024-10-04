@@ -9,8 +9,9 @@
   
   <title>地理院地図Vector｜国土地理院</title>
   
-
-   <script>
+<body>
+  <div id="map" style="height: 500px; width: 100%;"></div>
+  <script>
         // 地図の初期化
         var map = L.map('map').setView([35.681236, 139.767125], 13); // 東京駅の位置を初期表示
 
@@ -43,7 +44,7 @@
             alert("このブラウザはGeolocation APIに対応していません。");
         }
     </script>
-  
+  </body>
   
   
   <script src='./mapbox/1.13.0/mapbox-gl-gsi.js'></script>
