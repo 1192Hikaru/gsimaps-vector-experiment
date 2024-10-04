@@ -75,13 +75,18 @@
     }
   }
 
-  function showPosition(position) {
-    var latitude = position.coords.latitude;
-    var longitude = position.coords.longitude;
-    console.log("Latitude: " + latitude + ", Longitude: " + longitude);
-    
-    // 地図に現在地を表示する処理をここに追加
-  }
+ function showPosition(position) {
+  var latitude = position.coords.latitude;
+  var longitude = position.coords.longitude;
+  console.log("Latitude: " + latitude + ", Longitude: " + longitude);
+
+  // 地図の中心を現在地に設定
+  map.setView([latitude, longitude], 13); // 13はズームレベル
+
+  // マーカーを現在地に追加
+  var marker = L.marker([latitude, longitude]).addTo(map);
+  marker.bindPopup("あなたの現在地").openPopup();
+}
 
   function showError(error) {
     switch(error.code) {
