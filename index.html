@@ -1,24 +1,21 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html>
 <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0, ,user-scalable=no" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="description" content="自分で地図をデザインすることができる新たな地図閲覧サイトです。白地図や、写真に地名を重ねた地図など、学校教育現場や防災分野で活用できる地図を簡単に作成できます。">
+  <meta name="keywords" content="地理院地図ベクター,地理院地図ベクタ,地理院地図ベクトル,地理院地図">
+  
+  <title>地理院地図Vector｜国土地理院</title>
+
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="description" content="自分で地図をデザインすることができる新たな地図閲覧サイトです。白地図や、写真に地名を重ねた地図など、学校教育現場や防災分野で活用できる地図を簡単に作成できます。">
-    <meta name="keywords" content="地理院地図ベクター,地理院地図ベクタ,地理院地図ベクトル,地理院地図">
-    <title>地理院地図Vector｜国土地理院</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>現在地表示</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-    <link href='./mapbox/1.13.0/mapbox-gl.css' rel='stylesheet' />
-
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <script src='./mapbox/1.13.0/mapbox-gl-gsi.js'></script>
-    <script type="text/javascript" src="./jquery/jquery-1.11.1.min.js"></script>
-    <script type="text/javascript" src="./jquery/jquery-ui.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="./jquery/jquery-ui.min.css" />
-    <script type="text/javascript" src="./jquery/jquery.csv/jquery.csv.min.js"></script>
 </head>
-
 <body>
     <div id="map" style="height: 500px; width: 100%;"></div>
 
@@ -26,7 +23,7 @@
         // 地図の初期化
         var map = L.map('map').setView([35.681236, 139.767125], 13); // 東京駅の位置を初期表示
 
-        // GSI標準地図のタイルレイヤーを追加
+        // タイルレイヤーの追加
         L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png', {
             attribution: "<a href='https://maps.gsi.go.jp/development/ichiran.html'>国土地理院</a>"
         }).addTo(map);
@@ -36,13 +33,12 @@
             var lat = position.coords.latitude;
             var lon = position.coords.longitude;
 
-            // 現在地にマーカーを追加
+            // 現在地の位置にマーカーを表示
             var marker = L.marker([lat, lon]).addTo(map);
 
             // 現在地に地図の中心を移動
             map.setView([lat, lon], 15);
 
-            // マーカーにポップアップを追加
             marker.bindPopup("あなたの現在地です").openPopup();
         }
 
@@ -55,6 +51,7 @@
             alert("このブラウザはGeolocation APIに対応していません。");
         }
     </script>
+</body>
 
   
   
