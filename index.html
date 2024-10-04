@@ -9,21 +9,19 @@
   
   <title>地理院地図Vector｜国土地理院</title>
   
-
   <script src='./mapbox/1.13.0/mapbox-gl-gsi.js'></script>
   <link href='./mapbox/1.13.0/mapbox-gl.css' rel='stylesheet' />
-
+  
   <script type="text/javascript" src="./jquery/jquery-1.11.1.min.js"></script>
   <script type="text/javascript" src="./jquery/jquery-ui.min.js"></script>
   <link rel="stylesheet" type="text/css" href="./jquery/jquery-ui.min.css" />
   <script type="text/javascript" src="./jquery/jquery.csv/jquery.csv.min.js"></script>
   
-  
   <script src='./js/perfect-scrollbar.min.js'></script>
   <link href='./js/perfect-scrollbar.css' rel='stylesheet' />
-
+  
   <script type="text/javascript" src="./js/encoding/encoding.js"></script>
-
+  
   <script type="text/javascript" src="./js/src/util/ma.js"></script>
   <script type="text/javascript" src="./js/src/util/ma.ui.js"></script>
   
@@ -66,10 +64,9 @@
   <script type="text/javascript" src="./js/src/map/hanreiloader.js"></script>
   <script type="text/javascript" src="./js/togeojson.js"></script>
 
-  //追加1
-  <!-- Geolocation APIを使ったコード -->
-<script type="text/javascript">
-   function getLocation() {
+  <script type="text/javascript">
+    // 追加1: 位置情報取得とルート検索機能
+    function getLocation() {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(showPosition, showError);
       } else {
@@ -106,7 +103,8 @@
           break;
       }
     }
-// ルート検索機能を実装する関数
+
+    // ルート検索機能を実装する関数
     function findRoute(startLat, startLng, endLat, endLng) {
       var apiKey = "07BF5B6F-8455-478C-B797-7072EF6BFC17"; // ここにGraphHopperのAPIキーを入力
       var url = `https://graphhopper.com/api/1/route?point=${startLat},${startLng}&point=${endLat},${endLng}&vehicle=car&key=${apiKey}&locale=ja&instructions=true`;
@@ -182,7 +180,7 @@
       findRoute(startLat, startLng, endLat, endLng); // ここでルート検索を行う
     };
   </script>
-  </head>
+</head>
 <body>
   <div>
     <h2>ルート検索</h2>
@@ -196,9 +194,7 @@
   </div>
   
   <div id="map" style="width: 100%; height: 500px;"></div> <!-- 地図を表示する部分 -->
-  </body>
-  //追加1
-
+  
   <!-- DATA -->
   <script type="text/javascript" src="./js/src/data/vectortilesource.js"></script>
   <script type="text/javascript" src="./js/src/data/vectortiledata.js"></script>
