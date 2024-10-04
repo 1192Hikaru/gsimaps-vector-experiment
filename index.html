@@ -8,55 +8,7 @@
   <meta name="keywords" content="地理院地図ベクター,地理院地図ベクタ,地理院地図ベクトル,地理院地図">
   
   <title>地理院地図Vector｜国土地理院</title>
-
-  //追加1
-  <script type="text/javascript">
-    // 位置情報取得関数
-    function getLocation() {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(showPosition, showError);
-      } else {
-        alert("Geolocation is not supported by this browser.");
-      }
-    }
-
-    function showPosition(position) {
-      var latitude = position.coords.latitude;
-      var longitude = position.coords.longitude;
-      console.log("Latitude: " + latitude + ", Longitude: " + longitude);
-
-      // 地図の中心を現在地に設定
-      map.setView([latitude, longitude], 13); // 13はズームレベル
-
-      // マーカーを現在地に追加
-      var marker = L.marker([latitude, longitude]).addTo(map);
-      marker.bindPopup("あなたの現在地").openPopup();
-    }
-
-    function showError(error) {
-      switch(error.code) {
-        case error.PERMISSION_DENIED:
-          alert("User denied the request for Geolocation.");
-          break;
-        case error.POSITION_UNAVAILABLE:
-          alert("Location information is unavailable.");
-          break;
-        case error.TIMEOUT:
-          alert("The request to get user location timed out.");
-          break;
-        case error.UNKNOWN_ERROR:
-          alert("An unknown error occurred.");
-          break;
-      }
-    }
-
-    // ページが読み込まれたときに位置情報を取得
-    window.onload = function() {
-      getLocation();  // ここを追加
-      // ここに地図の初期化コードを追加
-    };
-  </script>
-  //追加1
+  
 
   <script src='./mapbox/1.13.0/mapbox-gl-gsi.js'></script>
   <link href='./mapbox/1.13.0/mapbox-gl.css' rel='stylesheet' />
@@ -114,51 +66,88 @@
   <script type="text/javascript" src="./js/src/map/hanreiloader.js"></script>
   <script type="text/javascript" src="./js/togeojson.js"></script>
 
+  //追加1
   <!-- Geolocation APIを使ったコード -->
 <script type="text/javascript">
-  function getLocation() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(showPosition, showError);
-    } else {
-      alert("Geolocation is not supported by this browser.");
+   function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition, showError);
+      } else {
+        alert("Geolocation is not supported by this browser.");
+      }
     }
-  }
 
- function showPosition(position) {
-  var latitude = position.coords.latitude;
-  var longitude = position.coords.longitude;
-  console.log("Latitude: " + latitude + ", Longitude: " + longitude);
+    function showPosition(position) {
+      var latitude = position.coords.latitude;
+      var longitude = position.coords.longitude;
+      console.log("Latitude: " + latitude + ", Longitude: " + longitude);
 
-  // 地図の中心を現在地に設定
-  map.setView([latitude, longitude], 13); // 13はズームレベル
+      // 地図の中心を現在地に設定
+      map.setView([latitude, longitude], 13); // 13はズームレベル
 
-  // マーカーを現在地に追加
-  var marker = L.marker([latitude, longitude]).addTo(map);
-  marker.bindPopup("あなたの現在地").openPopup();
-}
-
-  function showError(error) {
-    switch(error.code) {
-      case error.PERMISSION_DENIED:
-        alert("User denied the request for Geolocation.");
-        break;
-      case error.POSITION_UNAVAILABLE:
-        alert("Location information is unavailable.");
-        break;
-      case error.TIMEOUT:
-        alert("The request to get user location timed out.");
-        break;
-      case error.UNKNOWN_ERROR:
-        alert("An unknown error occurred.");
-        break;
+      // マーカーを現在地に追加
+      var marker = L.marker([latitude, longitude]).addTo(map);
+      marker.bindPopup("あなたの現在地").openPopup();
     }
-  }
 
-  // ページが読み込まれたときに位置情報を取得
-  window.onload = function() {
-    getLocation();
-  };
-</script>
+    function showError(error) {
+      switch(error.code) {
+        case error.PERMISSION_DENIED:
+          alert("User denied the request for Geolocation.");
+          break;
+        case error.POSITION_UNAVAILABLE:
+          alert("Location information is unavailable.");
+          break;
+        case error.TIMEOUT:
+          alert("The request to get user location timed out.");
+          break;
+        case error.UNKNOWN_ERROR:
+          alert("An unknown error occurred.");
+          break;
+      }
+    }
+// ルート検索機能を実装する関数
+    function findRoute(startLat, startLng, endLat, endLng) {
+      var apiKey = "07BF5B6F-8455-478C-B797-7072EF6BFC17"; // ここにGraphHopperのAPIキーを入力
+      var url = `https://graphhopper.com/api/1/route?point=${startLat},${startLng}&point=${endLat},${endLng}&vehicle=car&key=${apiKey}&locale=ja&instructions=true`;
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          if (data.paths && data.paths.length > 0) {
+            var path = data.paths[0].points.coordinates;
+
+            // ルートを地図に描画
+            var latlngs = path.map(coord => [coord[1], coord[0]]); // [lat, lng]の順に変換
+            var polyline = L.polyline(latlngs, { color: 'blue' }).addTo(map);
+            map.fitBounds(polyline.getBounds());
+          } else {
+            alert("ルートが見つかりませんでした。");
+          }
+        })
+        .catch(error => {
+          console.error("ルート取得中にエラーが発生しました:", error);
+        });
+    }
+
+    // ページが読み込まれたときに位置情報を取得
+    window.onload = function() {
+      getLocation(); // ここで現在地を取得
+
+      // 地図の初期化
+      var map = L.map('map').setView([35.681, 139.767], 13); // 東京駅周辺
+
+      // ルート検索を行うための座標（現在地と目的地の例）
+      var startLat = 35.681; // 出発地の緯度
+      var startLng = 139.767; // 出発地の経度
+      var endLat = 35.689; // 目的地の緯度
+      var endLng = 139.700; // 目的地の経度
+
+      // ルート検索を実行
+      findRoute(startLat, startLng, endLat, endLng); // ここでルート検索を行う
+    };
+  </script>
+  //追加1
 
   <!-- DATA -->
   <script type="text/javascript" src="./js/src/data/vectortilesource.js"></script>
