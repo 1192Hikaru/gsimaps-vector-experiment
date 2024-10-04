@@ -196,16 +196,7 @@
 
   <script type="text/javascript">
     if (!GSIBV.application) { window.onload = function () { document.getElementById("incompatible").style.display = 'block'; }; }
-  </script>
 
-  <script type="text/javascript">
-    // 地図を初期化する
-    const map = new mapboxgl.Map({
-        container: 'map', // 地図を表示する要素のID
-        style: 'https://tile.openstreetmap.jp/styles/osm-bright/style.json', // 使用する地図スタイル
-        center: [138.644218, 36.601463], // 初期表示位置 (緯度、経度)
-        zoom: 6 // 初期ズームレベル
-    });
 
     // 現在地を表示する関数
     function showUserLocation() {
