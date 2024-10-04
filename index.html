@@ -197,6 +197,50 @@
   <script type="text/javascript">
     if (!GSIBV.application) { window.onload = function () { document.getElementById("incompatible").style.display = 'block'; }; }
   </script>
+
+  <script type="text/javascript">
+    // 地図を初期化する
+    const map = new mapboxgl.Map({
+        container: 'map', // 地図を表示する要素のID
+        style: 'https://tile.openstreetmap.jp/styles/osm-bright/style.json', // 使用する地図スタイル
+        center: [138.644218, 36.601463], // 初期表示位置 (緯度、経度)
+        zoom: 6 // 初期ズームレベル
+    });
+
+    // 現在地を表示する関数
+    function showUserLocation() {
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                const userLat = position.coords.latitude;  // ユーザーの緯度
+                const userLng = position.coords.longitude; // ユーザーの経度
+
+                // ユーザーの位置にマーカーを表示
+                new mapboxgl.Marker({color: 'red'}) // マーカーの色を赤に設定
+                    .setLngLat([userLng, userLat]) // 緯度・経度を設定
+                    .addTo(map); // 地図にマーカーを追加
+
+                // 地図をユーザーの位置に移動
+                map.flyTo({
+                    center: [userLng, userLat],
+                    zoom: 12 // ズームレベル
+                });
+
+            }, function(error) {
+                console.error("位置情報取得エラー: ", error);
+            });
+        } else {
+            alert("このブラウザはGeolocationをサポートしていません");
+        }
+    }
+
+    // ページが読み込まれた後に現在地を表示
+    window.onload = function() {
+        showUserLocation();
+    };
+</script>
+
+<div id="map" style="width: 100%; height: 100vh;"></div> <!-- 地図表示用の要素 -->
+
   
 </head>
 <body>
