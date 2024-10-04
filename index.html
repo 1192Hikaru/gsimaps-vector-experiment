@@ -9,6 +9,52 @@
   
   <title>地理院地図Vector｜国土地理院</title>
 
+  <html lang="ja">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>現在地表示</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+</head>
+<body>
+    <div id="map" style="height: 500px; width: 100%;"></div>
+
+    <script>
+        // 地図の初期化
+        var map = L.map('map').setView([35.681236, 139.767125], 13); // 東京駅の位置を初期表示
+
+        // タイルレイヤーの追加
+        L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png', {
+            attribution: "<a href='https://maps.gsi.go.jp/development/ichiran.html'>国土地理院</a>"
+        }).addTo(map);
+
+        // 現在地を取得して地図に表示する関数
+        function showPosition(position) {
+            var lat = position.coords.latitude;
+            var lon = position.coords.longitude;
+
+            // 現在地の位置にマーカーを表示
+            var marker = L.marker([lat, lon]).addTo(map);
+
+            // 現在地に地図の中心を移動
+            map.setView([lat, lon], 15);
+
+            marker.bindPopup("あなたの現在地です").openPopup();
+        }
+
+        // 現在地を取得する
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition, function(error) {
+                alert("位置情報を取得できませんでした。エラーコード: " + error.code);
+            });
+        } else {
+            alert("このブラウザはGeolocation APIに対応していません。");
+        }
+    </script>
+</body>
+</html>
+
   <script src='./mapbox/1.13.0/mapbox-gl-gsi.js'></script>
   <link href='./mapbox/1.13.0/mapbox-gl.css' rel='stylesheet' />
 
