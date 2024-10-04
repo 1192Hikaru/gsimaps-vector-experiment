@@ -130,6 +130,41 @@
         });
     }
 
+    // 位置情報から座標を取得する関数（例: Geocoding APIを使う）
+    function getCoordinates(address, callback) {
+      var apiKey = "07BF5B6F-8455-478C-B797-7072EF6BFC17"; // Geocoding APIのAPIキーを入力
+      var url = `https://api.geocod.io/v1.7/geocode?q=${encodeURIComponent(address)}&api_key=${apiKey}`;
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          if (data.results && data.results.length > 0) {
+            var location = data.results[0].location;
+            callback(location.lat, location.lng); // 緯度と経度をコールバック関数に渡す
+          } else {
+            alert("住所が見つかりませんでした。");
+          }
+        })
+        .catch(error => {
+          console.error("座標取得中にエラーが発生しました:", error);
+        });
+    }
+
+    // ルート検索を実行する関数
+    function searchRoute() {
+      var startAddress = document.getElementById('startAddress').value; // 出発地の住所
+      var endAddress = document.getElementById('endAddress').value; // 目的地の住所
+
+      // 出発地の座標を取得
+      getCoordinates(startAddress, (startLat, startLng) => {
+        // 目的地の座標を取得
+        getCoordinates(endAddress, (endLat, endLng) => {
+          // ルート検索を実行
+          findRoute(startLat, startLng, endLat, endLng);
+        });
+      });
+    }
+
     // ページが読み込まれたときに位置情報を取得
     window.onload = function() {
       getLocation(); // ここで現在地を取得
@@ -147,6 +182,21 @@
       findRoute(startLat, startLng, endLat, endLng); // ここでルート検索を行う
     };
   </script>
+  </head>
+<body>
+  <div>
+    <h2>ルート検索</h2>
+    <label for="startAddress">出発地:</label>
+    <input type="text" id="startAddress" placeholder="出発地を入力" />
+    <br>
+    <label for="endAddress">目的地:</label>
+    <input type="text" id="endAddress" placeholder="目的地を入力" />
+    <br>
+    <button onclick="searchRoute()">ルート検索</button> <!-- ルート検索ボタン -->
+  </div>
+  
+  <div id="map" style="width: 100%; height: 500px;"></div> <!-- 地図を表示する部分 -->
+  </body>
   //追加1
 
   <!-- DATA -->
