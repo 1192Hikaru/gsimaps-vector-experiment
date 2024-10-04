@@ -246,11 +246,59 @@ GSIBV.Application = class extends MA.Class.Base {
   // 地図初期化
   _initializeMap() {
 
-    var mapOptions = {};
+      var mapOptions = {
+    container: 'map', // 地図を表示する要素ID
+    style: 'mapbox://styles/mapbox/streets-v11', // Mapboxのスタイル
+    center: [139.767125, 35.681236], // 初期位置を東京駅に設定
+    zoom: 13
+      };
 
     if (GSIBV.Config.useLocalFont) {
       mapOptions.localFont = GSIBV.Config.localFont;
     }
+    // Mapbox GL JSで地図を作成
+  this._map = new mapboxgl.Map(mapOptions);
+
+  // 現在地取得機能を追加
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      this._showCurrentPosition.bind(this), 
+      this._onLocationError.bind(this),
+      { enableHighAccuracy: true }
+    );
+  } else {
+    alert("Geolocation is not supported by this browser.");
+  }
+
+  this._map.on("load", MA.bind(function () {
+    this._searchPanel.map = this._map;
+    this.start();
+  }, this));
+}
+
+// 現在地を地図に表示する関数
+_showCurrentPosition(position) {
+  var lat = position.coords.latitude;
+  var lon = position.coords.longitude;
+
+  // 現在地にマーカーを追加
+  var marker = new mapboxgl.Marker()
+    .setLngLat([lon, lat])
+    .addTo(this._map);
+
+  // 地図の中心を現在地に移動
+  this._map.flyTo({
+    center: [lon, lat],
+    zoom: 14
+  });
+}
+
+// 位置情報取得エラー時の処理
+_onLocationError(error) {
+  console.error("Geolocation error:", error);
+  alert("現在地を取得できませんでした。");
+}
+   
 
     this._map = new GSIBV.Map(MA.DOM.select(".map")[0], mapOptions);
     this._map.on("load", MA.bind(function () {
