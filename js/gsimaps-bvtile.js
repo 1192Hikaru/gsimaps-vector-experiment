@@ -243,23 +243,42 @@ GSIBV.Application = class extends MA.Class.Base {
 
   }
 
-  // 地図初期化
-  _initializeMap() {
+ // 地図初期化 
+_initializeMap() {
+  var mapOptions = {};
 
-      var mapOptions = {
-    container: 'map', // 地図を表示する要素ID
-    style: 'mapbox://styles/mapbox/streets-v11', // Mapboxのスタイル
-    center: [139.767125, 35.681236], // 初期位置を東京駅に設定
-    zoom: 13
-      };
+  if (GSIBV.Config.useLocalFont) {
+    mapOptions.localFont = GSIBV.Config.localFont;
+  }
 
-    if (GSIBV.Config.useLocalFont) {
-      mapOptions.localFont = GSIBV.Config.localFont;
-    }
-    // Mapbox GL JSで地図を作成
-  this._map = new mapboxgl.Map(mapOptions);
+  this._map = new GSIBV.Map(MA.DOM.select(".map")[0], mapOptions);
+  this._map.on("load", MA.bind(function () {
+    this._searchPanel.map = this._map;
+    this.start();
+  }, this));
 
-  // 現在地取得機能を追加
+  this._map.on("showleftpanel", MA.bind(function(){
+    this._leftPanel.show();
+  }, this));
+  
+  this._map.on("vectortile", MA.bind(this._onVectorTileLoad, this));
+  this._hashManager.initialize(this._map, this._leftPanel);
+  this._map.initialize(this._hashManager.initialParams);
+
+  this._hashManager.on("change", MA.bind(this._onHashChange, this));
+  this._map.on("printmodechange", MA.bind(function(evt){
+    try {
+      if (evt.params.mode) {
+        GSIBV.UI.Dialog.Modeless.Manager.get().hide();
+      } else {
+        GSIBV.UI.Dialog.Modeless.Manager.get().show();
+      }
+    } catch(ex) {}
+  }, this));
+
+  this._contextMenu.map = this._map;
+
+  // 現在地取得機能の追加
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       this._showCurrentPosition.bind(this), 
@@ -269,11 +288,6 @@ GSIBV.Application = class extends MA.Class.Base {
   } else {
     alert("Geolocation is not supported by this browser.");
   }
-
-  this._map.on("load", MA.bind(function () {
-    this._searchPanel.map = this._map;
-    this.start();
-  }, this));
 }
 
 // 現在地を地図に表示する関数
@@ -282,7 +296,7 @@ _showCurrentPosition(position) {
   var lon = position.coords.longitude;
 
   // 現在地にマーカーを追加
-  var marker = new mapboxgl.Marker()
+  var marker = new GSIBV.Marker() // GSIBV.Marker が必要
     .setLngLat([lon, lat])
     .addTo(this._map);
 
@@ -298,77 +312,6 @@ _onLocationError(error) {
   console.error("Geolocation error:", error);
   alert("現在地を取得できませんでした。");
 }
-   
-
-    this._map = new GSIBV.Map(MA.DOM.select(".map")[0], mapOptions);
-    this._map.on("load", MA.bind(function () {
-      this._searchPanel.map = this._map;
-      this.start();
-    }, this));
-
-    this._map.on("showleftpanel", MA.bind(function(){
-      this._leftPanel.show();
-    },this));
-    this._map.on("vectortile", MA.bind(this._onVectorTileLoad, this));
-    this._hashManager.initialize(this._map, this._leftPanel);
-    this._map.initialize(this._hashManager.initialParams);
-
-    this._hashManager.on("change", MA.bind(this._onHashChange, this));
-    this._map.on("printmodechange", MA.bind(function(evt){
-      try {
-        if ( evt.params.mode) {
-          GSIBV.UI.Dialog.Modeless.Manager.get().hide();
-        } else {
-          GSIBV.UI.Dialog.Modeless.Manager.get().show();
-        }
-      }catch(ex){}
-    },this) );
-
-    this._contextMenu.map = this._map;
-
-
-  }
-  _onVectorTileLoad(e) {
-
-    return;
-    
-    var loadingView = MA.DOM.select("#loading")[0];
-
-    var list = e.params.list;
-    if (!list || list.length <= 0) {
-
-      if (this._loadingView)
-        document.body.removeChild(this._loadingView);
-      this._loadingView = null;
-
-    } else {
-      if (!this._loadingView) {
-        this._loadingView = MA.DOM.create("div");
-        MA.DOM.addClass(this._loadingView, "loading");
-        this._loadingViewUL = MA.DOM.create("ul");
-        this._loadingView.appendChild(this._loadingViewUL);
-        document.body.appendChild(this._loadingView);
-      }
-      this._loadingViewUL.innerHTML = '';
-
-      for (var i = 0; i < list.length; i++) {
-        var item = list[i];
-        var li = MA.DOM.create("li");
-        var stateCaption = "";
-        if (item.state == "loading") {
-          stateCaption = "の情報を取得しています";
-        } else if (item.state == "load") {
-          stateCaption = "のレイヤを地図に追加しています";
-        }
-
-        li.innerHTML = "<span>" + item.layer.title + '</span>' + stateCaption;
-        this._loadingViewUL.appendChild(li);
-      }
-      //if ( loadingView.style.display == "none")
-      //      MA.DOM.fadeIn( loadingView,200, 0.9);
-
-    }
-  }
   // 開始
   start() {
     
